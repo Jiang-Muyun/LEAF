@@ -207,7 +207,8 @@ if __name__ == '__main__':
         '--pretrain_ckpt', type=Path,
         default=Path('checkpoints/leaf-pretrain-epoch-10.ckpt'),
         help=(
-            'relative path to the pretrained Tower checkpoint '
+            'relative path to the pretrained Tower checkpoint; a bare filename '
+            'is also searched for under checkpoints/ '
             '(default: checkpoints/leaf-pretrain-epoch-10.ckpt)'
         ),
     )
@@ -236,10 +237,18 @@ if __name__ == '__main__':
         print(yellow('--no_warmup: training the tower from scratch.'))
     else:
         init_ckpt = args.pretrain_ckpt.resolve()
+        fallback_ckpt = (
+            CHECKPOINT_DIR.parent / args.pretrain_ckpt
+            if args.pretrain_ckpt.parts[:1] == (CHECKPOINT_DIR.name,)
+            else CHECKPOINT_DIR / args.pretrain_ckpt
+        ).resolve()
+        if not init_ckpt.is_file():
+            init_ckpt = fallback_ckpt
         pretrain_fingerprint = init_ckpt.stem
         if not init_ckpt.is_file():
             p.error(
-                f'warm-start checkpoint not found: {init_ckpt}. '
+                f'warm-start checkpoint not found: {args.pretrain_ckpt} '
+                f'(also checked {fallback_ckpt}). '
                 'Run a_pretrain.py first, choose another --pretrain_ckpt, '
                 'or pass --no_warmup.'
             )

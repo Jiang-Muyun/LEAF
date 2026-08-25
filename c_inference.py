@@ -16,6 +16,7 @@ from b_instruct_tuning import build_prototype
 
 Targets = load_targets()
 Instructions = load_instructions()
+CHECKPOINT_DIR = Path(__file__).resolve().parent / 'checkpoints'
 
 def make_instruct_emb(ds, instruct_text, level):
     """Build instruction embedding for a dataset at the given detail level.
@@ -81,10 +82,12 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser()
     p.add_argument('--gpu', type=str, default='0,1,2,3')
     p.add_argument('--bs', type=int, default=256)
-    p.add_argument('--ckpt', type=int, default=100)
     p.add_argument(
-        '--checkpoint', type=Path, default=None,
-        help='relative path to an instruction-tuning checkpoint',
+        '--ckpt', type=Path, required=True,
+        help=(
+            'relative path to an instruction-tuning checkpoint; a bare filename '
+            'is also searched for under checkpoints/'
+        ),
     )
     p.add_argument('--dim', type=str, default=None, help='override model dims (default: from --config YAML)')
     p.add_argument('--emb', type=str, default=None, help='override embedding model (default: from --config YAML)')
@@ -96,27 +99,30 @@ if __name__ == '__main__':
 
     if args.bs <= 0:
         p.error('--bs must be positive')
-    if args.checkpoint is not None and args.checkpoint.is_absolute():
-        p.error('--checkpoint must be a relative path')
+    if args.ckpt.is_absolute():
+        p.error('--ckpt must be a relative path')
 
     random.seed(args.seed)
     device = 'cpu' if args.gpu == '-1' else f'cuda:{args.gpu.split(",")[0]}'
 
     cfg = load_yaml(args.config)
     config = build_model_config(cfg, args.dim, emb=args.emb)
-    embedding_model = config.text_emb_model_name
 
-    if args.checkpoint is not None:
-        ckpt = args.checkpoint.resolve()
-        report_dir = ckpt.parent / 'direct_inference'
-    else:
-        fingerprint = f'w{config.window_len}-c{config.dim_cnn}-t{config.dim_token}-lay{config.num_layers}'
-        it_fingerprint = f'q{config.num_q}-qlay{config.num_qformer_layers}-{embedding_model}-{args.seed}'
-        ckpt = Path(f'ckpt/{fingerprint}/{it_fingerprint}/it{args.ckpt:03d}.ckpt')
-        report_dir = ckpt.parent
+    ckpt = args.ckpt.resolve()
+    fallback_ckpt = (
+        CHECKPOINT_DIR.parent / args.ckpt
+        if args.ckpt.parts[:1] == (CHECKPOINT_DIR.name,)
+        else CHECKPOINT_DIR / args.ckpt
+    ).resolve()
+    if not ckpt.is_file():
+        ckpt = fallback_ckpt
 
     if not ckpt.is_file():
-        p.error(f'checkpoint not found: {ckpt}')
+        p.error(
+            f'checkpoint not found: {args.ckpt} '
+            f'(also checked {fallback_ckpt})'
+        )
+    report_dir = ckpt.parent / 'direct_inference'
 
     prototypes, key2idx, text2emb = build_prototype(Targets, config.text_emb_model_name)
 
