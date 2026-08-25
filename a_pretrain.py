@@ -1,3 +1,10 @@
+"""
+Pretrain the LEAF EEG Tower with self-supervised spectral-temporal reconstruction.
+
+Copyright 2022 Centre for Brain Computing Research (CBCR), College of Computing and Data Science (CCDS), Nanyang Technological University (NTU);
+licensed under the CBCR License 1.0 (see LICENSE).
+"""
+
 import argparse
 import random
 from pathlib import Path

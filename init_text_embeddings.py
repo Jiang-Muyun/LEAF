@@ -1,18 +1,10 @@
-"""Text-embedding generation and on-disk cache.
-
-Run directly to precompute normalized embeddings for every target label and
-instruction phrasing, cached as a single (txt, npy) pair per model:
-  - text_embeddings/<model>.txt : one text per line (N lines)
-  - text_embeddings/<model>.npy : float32 array of shape (N, dim); row i = line i
-
-    python init_text_embeddings.py <model>
-
-Or import from another module:
-    from init_text_embeddings import load_embeddings                      # read the cached pair
-    from init_text_embeddings import LEAF_Text_Embedding, cache_embeddings # (re)generate
-
-The supported models (dim / path / loader) live in configs/env.yaml.
 """
+Generate and cache text embeddings for LEAF labels and instructions.
+
+Copyright 2022 Centre for Brain Computing Research (CBCR), College of Computing and Data Science (CCDS), Nanyang Technological University (NTU);
+licensed under the CBCR License 1.0 (see LICENSE).
+"""
+
 import argparse
 from pathlib import Path
 

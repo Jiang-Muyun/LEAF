@@ -1,6 +1,7 @@
 {
     "Version": "v2.0 (2025-07-11)",
-    "Description": "Montage for NeuroSFT-ch65, based on the Brain Products EEG system",
+    "Description": "Defines the 65-channel LEAF electrode montage and channel-mapping policy",
+    "Copyright": "Copyright 2022 Centre for Brain Computing Research (CBCR), College of Computing and Data Science (CCDS), Nanyang Technological University (NTU); licensed under the CBCR License 1.0 (see LICENSE).",
     
     "Electrodes":[
         "Fpz", "AFz", "Fz", "FCz", "Cz", "CPz", "Pz", "POz", "Oz", 

@@ -9,10 +9,12 @@ LEAF aligns EEG representations with natural-language instructions and label sem
 <p align="center">
   <img src="assets/leaf-overview.png" alt="Overview of LEAF and language-aligned EEG modeling" width="100%">
 </p>
+<p align="center"><em>LEAF connects diverse EEG decoding tasks through a shared language-aligned representation space.</em></p>
 
 <p align="center">
   <img src="assets/leaf-architecture.png" alt="LEAF model architecture" width="100%">
 </p>
+<p align="center"><em>The framework combines self-supervised EEG pretraining with instruction-conditioned semantic alignment.</em></p>
 
 ## Quick start
 

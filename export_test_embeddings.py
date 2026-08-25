@@ -1,14 +1,8 @@
-"""Export direct-inference embeddings for a global UMAP visualization.
+"""
+Export LEAF test embeddings for direct-inference analysis and visualization.
 
-This is the current-codebase port of Code_v1/LEAF_big_inference.py.  It runs the
-pooled test split of every configured downstream dataset through one LEAF
-checkpoint and stores the trial embeddings together with ground-truth and
-predicted labels.  Keeping the labels makes it possible to plot actual class
-clusters rather than only coloring points by their source dataset.
-
-Run from the LEAF directory, for example:
-
-    python export_test_embeddings.py --gpu 0 --ckpt 100 --level 2
+Copyright 2022 Centre for Brain Computing Research (CBCR), College of Computing and Data Science (CCDS), Nanyang Technological University (NTU);
+licensed under the CBCR License 1.0 (see LICENSE).
 """
 
 import argparse

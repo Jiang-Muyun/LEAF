@@ -1,15 +1,10 @@
-"""Load model / training base parameters from a YAML config (default: configs/LEAF_mpnet.yaml).
-
-The YAML holds the *static* base parameters shared across stages plus the per-stage
-training hyper-parameters. Per-run fields (model dims, embedding model) are still
-supplied on the command line via --dim/--emb and merged in here, so the
-checkpoint-path fingerprint stays driven by the CLI rather than the YAML.
-
-This module also loads the auxiliary configs: per-task definitions
-(configs/tasks.yaml) holding the dataset labels and instruction phrasings, and the
-environment config (configs/env.yaml) holding the embedding-model registry and
-data-folder locations.
 """
+Load LEAF model, training, task, and environment configurations.
+
+Copyright 2022 Centre for Brain Computing Research (CBCR), College of Computing and Data Science (CCDS), Nanyang Technological University (NTU);
+licensed under the CBCR License 1.0 (see LICENSE).
+"""
+
 from pathlib import Path
 
 import yaml
