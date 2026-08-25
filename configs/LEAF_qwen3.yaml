@@ -1,0 +1,53 @@
+model:
+  sfreq: 200
+  n_channels: 65
+  max_seq_len: 2000          # 200 Hz * 10 s
+  ff_scale: 4
+  num_heads: 8
+  dropout: 0.1
+
+  # Per-run architecture dims (the 6-part --dim 100-64-256-12-8-4).
+  window_len: 100
+  dim_cnn: 64
+  dim_token: 256
+  num_layers: 12
+  num_q: 8
+  num_qformer_layers: 4
+
+  # Qwen3-Embedding-4B; its 2560-dim output is derived from configs/env.yaml.
+  text_emb_model_name: qwen3-4b
+
+  mask_ratio: 0.5
+  freq_cutoff_min: 1
+  freq_cutoff_max: 50
+  freq_cutoff_bandwidth: 6
+
+# Per-stage training hyper-parameters (each stage keeps its own values).
+pretrain:
+  lr_base: 1.0e-6
+  max_epochs: 4
+  warmup_epochs: 1
+  precision: bf16-mixed
+
+instruct:
+  lr_base: 1.0e-3
+  lr_scale_fast_params: 1.0      # for tokenizer CNN's parameters
+  lr_scale_slow_params: 0.2      # for the rest of the model's parameters
+  warmup_epochs: 2
+  cosine_annealing_lr_base: 1.0  # the learning rate multiplier after warmup
+  cosine_annealing_lr_min: 0.1   # the minimum learning rate multiplier for cosine annealing
+  max_epochs: 100
+  precision: bf16-mixed
+  weight_decay: 1.0e-3
+  check_val_every_n_epoch: 10
+  save_ckpt_every_n_epoch: 10    # periodic checkpoint cadence; null = only save the final LEAF_Instruct.ckpt
+
+downstream:
+  lr_base: 1.0e-3
+  lr_scale_fast_params: 1.0
+  lr_scale_slow_params: 0.1
+  warmup_epochs: 1
+  max_epochs: 200
+  precision: bf16-mixed
+  weight_decay: 1.0e-3
+  check_val_every_n_epoch: 5

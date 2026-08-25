@@ -1,0 +1,79 @@
+Right
+Left
+Foot
+Tongue
+Cylin
+Sphe
+Lumbrical
+Anger
+Fear
+Disgust
+Sad
+Amusement
+Inspiration
+Joy
+Tenderness
+Neutral
+Positive
+Negative
+Happy
+Surprise
+12.0
+8.6
+6.6
+5.4
+hello
+help-me
+stop
+thank-you
+yes
+Resting
+Workload
+None
+Default
+This is a motor imagery decoding task
+Decode motor imagery
+Please decode the motor imagery
+Classify the motor imagery task
+Identify the motor imagery class
+Predict the type of imagined movement
+Determine which motor imagery action is performed
+Infer the imagined motor action from the EEG
+Which motor imagery category does this trial belong to
+Analyze this EEG and classify the motor imagery
+This is an emotion recognition task
+Decode emotional states
+Please decode the emotional states
+Identify the emotional state
+Classify the emotion represented in the signal
+Predict the emotion category
+Determine the emotional condition from this EEG
+Infer the participant emotional state
+What emotion does this EEG signal reflect
+Analyze the EEG and classify the emotion
+This is a covert speech decoding task
+Decode covert speech
+Please decode the covert speech commands
+Identify the covert speech command
+Classify the imagined speech
+Predict the covert speech category
+Determine what the subject is silently saying
+Infer the intended covert speech command
+What covert speech does this signal represent
+Analyze the EEG and classify the covert speech content
+This is an SSVEP frequency decoding task
+Decode SSVEP frequency
+Please decode the SSVEP frequency
+Identify the SSVEP target frequency
+Classify the evoked frequency response
+Predict the stimulus frequency from the EEG
+Determine which frequency the subject was attending to
+Infer the visual flicker frequency in this trial
+Analyze the EEG and recognize the SSVEP frequency
+Decode mental workload states
+Please decode mental workload states
+Healthy
+ADHD
+Decode mental disorder
+Decode ADHD vs Healthy
+Please decode ADHD vs Healthy
