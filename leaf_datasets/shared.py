@@ -14,7 +14,7 @@ from pathlib import Path
 import h5py
 from dataclasses import dataclass
 sys.path.append(str(Path(__file__).resolve().parent.parent))
-from leaf_datasets.ElectrodeUnifier import ElectrodeUnifier
+from leaf_datasets.electrode_unifier import ElectrodeUnifier
 from load_config import load_paths
 
 _paths = load_paths()

@@ -1,3 +1,10 @@
+"""
+Preprocess the PhysioNet EEG Motor Movement/Imagery dataset for motor-imagery decoding.
+
+Copyright 2022 Centre for Brain Computing Research (CBCR), College of Computing and Data Science (CCDS), Nanyang Technological University (NTU);
+licensed under the CBCR License 1.0 (see LICENSE).
+"""
+
 import mne
 import numpy as np
 import multiprocessing as mp

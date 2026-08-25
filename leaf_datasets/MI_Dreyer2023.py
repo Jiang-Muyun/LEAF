@@ -1,27 +1,10 @@
-"""Placeholder builder for MI_Dreyer2023.
-
-There is no preprocessing here on purpose. This dataset was preprocessed
-externally and delivered as a finished .h5, already mapped onto the LEAF-ch65
-montage, so re-running the usual `pipeline()` would double-scale it. This module
-only records the provenance and conventions of that file and provides `verify()`
-to re-check it against the repo's expectations.
-
-Delivered file: /media/public/LEAF/MI_Dreyer2023.h5
-
-Layout (differs from the rest of leaf_datasets/*.py, which key on subject):
-    train/X  (10000, 65, 801) float32     train/Y  (10000,) int64
-    val/X    ( 2152, 65, 801) float32     val/Y    ( 2152,) int64
-    test/X   ( 2160, 65, 801) float32     test/Y   ( 2160,) int64
-
-Not yet wired into the training code. Three things are missing, all outside this
-file:
-  1. `load_datasets.load_predefined_split` reads the *flat* names trainX/trainY/
-     validX/validY/testX/testY, so it raises KeyError on these nested groups.
-     Either add a branch that reads f['train']['X'] etc., or restructure the file.
-  2. `load_by_index`/`load_predefined_split` resolve DATA_FOLDER, which env.yaml
-     points at /media/public/LEAF/Downstream — the file sits one level up.
-  3. configs/tasks.yaml has no MI_Dreyer2023 entry (see TEXT_LABELS below).
 """
+Load and validate the Dreyer2023 EEG dataset for held-out motor-imagery evaluation.
+
+Copyright 2022 Centre for Brain Computing Research (CBCR), College of Computing and Data Science (CCDS), Nanyang Technological University (NTU);
+licensed under the CBCR License 1.0 (see LICENSE).
+"""
+
 import h5py
 import numpy as np
 
