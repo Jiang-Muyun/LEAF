@@ -21,6 +21,13 @@ Configure the raw, pretraining, and downstream dataset paths in `configs/env.yam
 Download the released checkpoints into `checkpoints/`, then run direct inference:
 
 ```bash
+wget -c -P checkpoints https://github.com/Jiang-Muyun/LEAF/releases/download/v1.0/leaf-v1.0-pretrain.ckpt
+wget -c -P checkpoints https://github.com/Jiang-Muyun/LEAF/releases/download/v1.0/leaf-v1.0-instruct-mpnet-base.ckpt
+```
+
+Alternatively, download both files with `bash download_checkpoints.sh`.
+
+```bash
 python c_inference.py \
   --config configs/LEAF_mpnet.yaml \
   --ckpt leaf-v1.0-instruct-mpnet-base.ckpt \
