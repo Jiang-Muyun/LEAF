@@ -99,7 +99,7 @@ Use `--pretrain_ckpt` to select your own pretrained Tower checkpoint instead. Tr
 Both paths below initialize from the **same instruction-tuned LEAF checkpoint** and adapt to labeled training data from one target dataset.
 
 <p align="center">
-  <img src="assets/fig_finetuning_paths.png" alt="Two LEAF fine-tuning paths: (A) EEG encoder with a new MLP classifier; (B) EEG encoder and Q-Former with cosine-similarity logits against fixed text prototypes" width="50%">
+  <img src="assets/fig_finetuning_paths.png" alt="Two LEAF fine-tuning paths: (A) EEG encoder with a new MLP classifier; (B) EEG encoder and Q-Former with cosine-similarity logits against fixed text prototypes" width="80%">
 </p>
 
 ### A. EEG encoder + MLP
