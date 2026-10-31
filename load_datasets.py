@@ -46,99 +46,61 @@ def split_train_valid(trainvalX, trainvalY, val_ratio):
     trainY, valY = trainvalY[train_idx], trainvalY[val_idx]
     return trainX, trainY, valX, valY
 
+# HDF5 key order and subject boundaries match the published dataset splits.
+SUBJECT_SPLITS = {
+    'EMO_FACED': (100, 123), 'MI_BCIC_IV2a': (7, 9),
+    'MI_OpenBMI': (42, 54), 'MI_BCIC_Upperlimb': (11, 15),
+    'MI_ShanghaiU': (20, 25), 'MI_HighGamma': (10, 14),
+    'MI_Cho2017': (40, 49), 'MI_Shin2017A': (22, 28),
+    'MI_PhysioNet': (80, 109), 'Workload': (32, 36),
+    'SSVEP_OpenBMI': (42, 54),
+}
+PREDEFINED_SPLITS = {
+    'EMO_SEED_3_seg4', 'EMO_SEED_4_seg4', 'EMO_SEED_5_seg4',
+    'EMO_SEED_7_seg4', 'ADHD_AliMotie',
+}
+SPEECH_TRAIN_END = 250
+SPEECH_VALID_END = 300
+
+
+def filter_classes(ds, x, y):
+    if ds == 'MI_HighGamma':
+        keep = y != 2
+        return x[keep], y[keep]
+    return x, y
+
+
+def load_test_split(ds):
+    """Read the standard test partition without allocating train/validation data."""
+    if ds in SUBJECT_SPLITS:
+        start, stop = SUBJECT_SPLITS[ds]
+        return filter_classes(ds, *load_by_index(ds, range(start, stop)))
+    with h5py.File(DATA_FOLDER / f'{ds}.h5', 'r', locking=False) as f:
+        if ds in PREDEFINED_SPLITS:
+            return f['testX'][:], f['testY'][:]
+        if ds == 'CS_BCIC_Speech':
+            subjects = list(f.keys())
+            x = np.concatenate([f[sub]['X'][SPEECH_VALID_END:] for sub in subjects])
+            y = np.concatenate([f[sub]['Y'][SPEECH_VALID_END:] for sub in subjects])
+            return x, y
+    raise ValueError(f'Unknown dataset {ds}')
+
+
 def load_dataset(ds, val_ratio=0.2):
-    if ds == 'EMO_FACED':
-        trialTime = 10
-        trainvalX, trainvalY = load_by_index(ds, range(0, 100))
-        testX,  testY        = load_by_index(ds, range(100, 123))
-        trainX, trainY, valX, valY = split_train_valid(trainvalX, trainvalY, val_ratio)
-
-    elif ds in ['EMO_SEED_3_seg4', 'EMO_SEED_4_seg4', 'EMO_SEED_5_seg4', 'EMO_SEED_7_seg4']:
-        trialTime = 4
-        trainX, trainY, valX, valY, testX, testY = load_predefined_split(ds)
-
-    elif ds == 'MI_BCIC_IV2a':
-        trialTime = 4
-        trainvalX, trainvalY = load_by_index(ds, range(0, 7))
-        testX,  testY        = load_by_index(ds, range(7, 9))
-        trainX, trainY, valX, valY = split_train_valid(trainvalX, trainvalY, val_ratio)
-
-    elif ds == 'MI_OpenBMI':
-        trialTime = 4
-        trainvalX, trainvalY = load_by_index(ds, range(0, 42))
-        testX,  testY        = load_by_index(ds, range(42, 54))
-        trainX, trainY, valX, valY = split_train_valid(trainvalX, trainvalY, val_ratio)
-
-    elif ds == 'MI_BCIC_Upperlimb':
-        trialTime = 4
-        trainvalX, trainvalY = load_by_index(ds, range(0, 11))
-        testX,  testY        = load_by_index(ds, range(11, 15))
-        trainX, trainY, valX, valY = split_train_valid(trainvalX, trainvalY, val_ratio)
-
-    elif ds == 'MI_ShanghaiU':
-        trialTime = 4
-        trainvalX, trainvalY = load_by_index(ds, range(0, 20))
-        testX,  testY        = load_by_index(ds, range(20, 25))
-        trainX, trainY, valX, valY = split_train_valid(trainvalX, trainvalY, val_ratio)
-
-    elif ds == 'MI_HighGamma':
-        trialTime = 4
-        trainvalX, trainvalY = load_by_index(ds, range(0, 10))
-        testX,  testY        = load_by_index(ds, range(10, 14))
-        trainvalX = trainvalX[trainvalY != 2]
-        trainvalY = trainvalY[trainvalY != 2]
-        testX = testX[testY != 2]
-        testY = testY[testY != 2]
-        trainX, trainY, valX, valY = split_train_valid(trainvalX, trainvalY, val_ratio)
-
-    elif ds == 'MI_Cho2017':
-        trialTime = 4
-        trainvalX, trainvalY = load_by_index(ds, range(0, 40))
-        testX,  testY        = load_by_index(ds, range(40, 49))
-        trainX, trainY, valX, valY = split_train_valid(trainvalX, trainvalY, val_ratio)
-
-    elif ds == 'MI_Shin2017A':
-        trialTime = 4
-        trainvalX, trainvalY = load_by_index(ds, range(0, 22))
-        testX,  testY        = load_by_index(ds, range(22, 28))
-        trainX, trainY, valX, valY = split_train_valid(trainvalX, trainvalY, val_ratio)
-
-    elif ds == 'MI_PhysioNet':
-        trialTime = 4
-        trainvalX, trainvalY = load_by_index(ds, range(0, 80))
-        testX,  testY        = load_by_index(ds, range(80, 109))
-        trainX, trainY, valX, valY = split_train_valid(trainvalX, trainvalY, val_ratio)
-
+    trial_time = 10 if ds in {'EMO_FACED', 'ADHD_AliMotie'} else 4
+    if ds in PREDEFINED_SPLITS:
+        return (trial_time, *load_predefined_split(ds))
+    if ds in SUBJECT_SPLITS:
+        train_end, _ = SUBJECT_SPLITS[ds]
+        x, y = filter_classes(ds, *load_by_index(ds, range(train_end)))
+        train_x, train_y, val_x, val_y = split_train_valid(x, y, val_ratio)
     elif ds == 'CS_BCIC_Speech':
-        trialTime = 4
-        X, Y = load_by_index(ds, concat=False)
-        trainX, trainY = X[:,    :250], Y[:,    :250]
-        valX,   valY   = X[:, 250:300], Y[:, 250:300]
-        testX, testY   = X[:, 300:],    Y[:, 300:]
-        trainX = trainX.reshape(-1, trainX.shape[2], trainX.shape[3])
-        trainY = trainY.reshape(-1)
-        valX   = valX.reshape(-1,   valX.shape[2],   valX.shape[3])
-        valY   = valY.reshape(-1)
-        testX  = testX.reshape(-1,  testX.shape[2],  testX.shape[3])
-        testY  = testY.reshape(-1)
-
-    elif ds == 'Workload':
-        trialTime = 4
-        trainvalX, trainvalY = load_by_index(ds, range(0, 32))
-        testX    , testY     = load_by_index(ds, range(32, 36))
-        trainX, trainY, valX, valY = split_train_valid(trainvalX, trainvalY, val_ratio)
-
-    elif ds == 'ADHD_AliMotie':
-        trialTime = 10
-        trainX, trainY, valX, valY, testX, testY = load_predefined_split(ds)
-
-    elif ds == 'SSVEP_OpenBMI':
-        trialTime = 4
-        trainvalX, trainvalY = load_by_index(ds, range(0, 42))
-        testX,  testY        = load_by_index(ds, range(42, 54))
-        trainX, trainY, valX, valY = split_train_valid(trainvalX, trainvalY, val_ratio)
-
+        x, y = load_by_index(ds, concat=False)
+        train_x = x[:, :SPEECH_TRAIN_END].reshape(-1, *x.shape[2:])
+        train_y = y[:, :SPEECH_TRAIN_END].reshape(-1)
+        val_x = x[:, SPEECH_TRAIN_END:SPEECH_VALID_END].reshape(-1, *x.shape[2:])
+        val_y = y[:, SPEECH_TRAIN_END:SPEECH_VALID_END].reshape(-1)
     else:
         raise ValueError(f'Unknown dataset {ds}')
-
-    return trialTime, trainX, trainY, valX, valY, testX, testY
+    test_x, test_y = load_test_split(ds)
+    return trial_time, train_x, train_y, val_x, val_y, test_x, test_y
